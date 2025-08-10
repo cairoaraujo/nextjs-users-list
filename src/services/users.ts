@@ -6,3 +6,10 @@ export async function getUsers(): Promise<User[]> {
   if (!res.ok) throw new Error('Error fetching users');
   return res.json();
 }
+export async function deleteUser(id : number) {
+  const res = await fetch(`${ENDPOINTS.USERS}/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Error on delete user');
+  return res.json();
+}

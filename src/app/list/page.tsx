@@ -2,14 +2,29 @@
 'use client';
 
 import Loading from '@/components/Loading';
-import { getUsers } from '@/services/users';
+import { ModalDeleteUser } from '@/components/ModalDeleteUser';
+import { deleteUser, getUsers } from '@/services/users';
 import { User } from '@/types/user';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export default function Page() {
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+
+    const mutation = useMutation({
+    mutationFn: (id: number) => deleteUser(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setIsModalOpen(false);
+      setSelectedUser(null);
+    },
   });
 
   if (isLoading) return <Loading/>;
@@ -56,7 +71,10 @@ export default function Page() {
                   </button>
 
                   <button
-                    onClick={() => console.log('excluir', user.id)}
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setIsModalOpen(true);
+                    }}
                     className="w-9 h-9 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-700"
                   >
                     <img
@@ -74,6 +92,12 @@ export default function Page() {
           ))}
         </tbody>
       </table>
+      <ModalDeleteUser
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => selectedUser && mutation.mutate(selectedUser.id)}
+        userName={selectedUser?.name}
+      />
     </div>
   );
 }
