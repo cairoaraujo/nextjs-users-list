@@ -32,7 +32,11 @@ export default function Page() {
 
   return (
     <div>
-      <h1 className="text-4xl mb-6">Users</h1>
+      <div className='flex items-center justify-between mb-7'>
+              <h1 className="text-4xl">Users</h1>
+
+      <button className='bg-blue-500 py-2 rounded-md text-white px-5'>Add new</button>
+      </div>
 
       <table className="min-w-full border-collapse border border-gray-300 text-left">
         <thead className="bg-blue-100">
@@ -61,7 +65,7 @@ export default function Page() {
                 <div className="flex justify-center gap-3">
                   <button
                     onClick={() => console.log('editar', user.id)}
-                    className="w-9 h-9 flex items-center justify-center rounded-full bg-green-500 hover:bg-green-600"
+                    className="w-9 h-9 flex items-center justify-center rounded-full bg-green-400 hover:bg-green-500"
                   >
                     <img
                       src="/icons/editIcon.svg"
@@ -75,7 +79,7 @@ export default function Page() {
                       setSelectedUser(user);
                       setIsModalOpen(true);
                     }}
-                    className="w-9 h-9 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-700"
+                    className="w-9 h-9 flex items-center justify-center rounded-full bg-red-400 hover:bg-red-500"
                   >
                     <img
                       src="/icons/deleteIcon.svg"
