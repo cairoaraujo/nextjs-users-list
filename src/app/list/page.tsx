@@ -2,9 +2,10 @@
 'use client';
 
 import Loading from '@/components/Loading';
+import { ModalCreateUser } from '@/components/ModalCreateUser';
 import { ModalDeleteUser } from '@/components/ModalDeleteUser';
 import { ModalUpdateUser } from '@/components/ModalUpdateUser';
-import { deleteUser, getUsers, updateUser } from '@/services/users';
+import { deleteUser, getUsers, updateUser, createUser } from '@/services/users';
 import { User } from '@/types/user';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -17,8 +18,16 @@ export default function Page() {
   });
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+  const createMutation = useMutation<any, Error, Partial<User>>({
+    mutationFn: (userData: Partial<User>) => createUser(userData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setIsCreateModalOpen(false);
+    },
+  });
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteUser(id),
     onSuccess: () => {
@@ -28,7 +37,7 @@ export default function Page() {
     },
   });
   const updateMutation = useMutation<
-    any, // or the actual return type of updateUser
+    any,
     Error,
     { id: number; data: Partial<User> }
   >({
@@ -40,11 +49,28 @@ export default function Page() {
       setSelectedUser(null);
     },
   });
+
+  function handleCreateUser(data: Partial<User>) {
+    createMutation.mutate(data);
+  }
+
   function handleUpdateUser(data: Partial<User>) {
     if (selectedUser) {
       updateMutation.mutate({ id: selectedUser.id, data });
     }
   }
+
+  const sortedUsers = (data ?? []).slice().sort((a, b) => {
+    const updatedA = new Date(a.updatedAt).getTime();
+    const updatedB = new Date(b.updatedAt).getTime();
+
+    if (updatedB !== updatedA) return updatedB - updatedA;
+
+    const createdA = new Date(a.createdAt).getTime();
+    const createdB = new Date(b.createdAt).getTime();
+
+    return createdB - createdA;
+  });
 
   if (isLoading) return <Loading />;
   if (isError) return <div>Error: {(error as Error).message}</div>;
@@ -54,7 +80,10 @@ export default function Page() {
       <div className="flex items-center justify-between mb-7">
         <h1 className="text-4xl">Users</h1>
 
-        <button className="bg-blue-500 py-2 rounded-md text-white px-5">
+        <button
+          className="bg-blue-500 py-2 rounded-md text-white px-5"
+          onClick={() => setIsCreateModalOpen(true)}
+        >
           Add new
         </button>
       </div>
@@ -70,7 +99,7 @@ export default function Page() {
           </tr>
         </thead>
         <tbody>
-          {(data ?? []).map((user: User) => (
+          {sortedUsers.map((user: User) => (
             <tr key={user.id} className="hover:bg-gray-50 text-lg">
               <td className=" px-4 py-2">{user.name}</td>
               <td className=" px-4 py-2">{user.email}</td>
@@ -127,6 +156,12 @@ export default function Page() {
           ))}
         </tbody>
       </table>
+
+      <ModalCreateUser
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateUser}
+      />
       <ModalDeleteUser
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
