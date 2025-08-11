@@ -10,7 +10,12 @@ interface ModalDeleteUserProps {
   userName?: string;
 }
 
-export function ModalDeleteUser({ isOpen, onClose, onConfirm, userName }: ModalDeleteUserProps) {
+export function ModalDeleteUser({
+  isOpen,
+  onClose,
+  onConfirm,
+  userName,
+}: ModalDeleteUserProps) {
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'auto';
@@ -25,7 +30,8 @@ export function ModalDeleteUser({ isOpen, onClose, onConfirm, userName }: ModalD
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
         <h2 className="text-xl font-semibold mb-4">Delete user</h2>
         <p className="mb-6">
-          Are you sure you want to delete the user <strong>{userName ?? 'este usuário'}</strong>?
+          Are you sure you want to delete the user{' '}
+          <strong>{userName ?? 'este usuário'}</strong>?
         </p>
         <div className="flex justify-end gap-3">
           <button
@@ -43,6 +49,6 @@ export function ModalDeleteUser({ isOpen, onClose, onConfirm, userName }: ModalD
         </div>
       </div>
     </div>,
-    document.getElementById('portal-root') as HTMLElement
+    document.getElementById('portal-root') as HTMLElement,
   );
 }

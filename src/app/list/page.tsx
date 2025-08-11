@@ -17,8 +17,7 @@ export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-
-    const mutation = useMutation({
+  const mutation = useMutation({
     mutationFn: (id: number) => deleteUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -27,27 +26,27 @@ export default function Page() {
     },
   });
 
-  if (isLoading) return <Loading/>;
+  if (isLoading) return <Loading />;
   if (isError) return <div>Error: {(error as Error).message}</div>;
 
   return (
     <div>
-      <div className='flex items-center justify-between mb-7'>
-              <h1 className="text-4xl">Users</h1>
+      <div className="flex items-center justify-between mb-7">
+        <h1 className="text-4xl">Users</h1>
 
-      <button className='bg-blue-500 py-2 rounded-md text-white px-5'>Add new</button>
+        <button className="bg-blue-500 py-2 rounded-md text-white px-5">
+          Add new
+        </button>
       </div>
 
       <table className="min-w-full border-collapse border border-gray-300 text-left">
         <thead className="bg-blue-100">
-          <tr className='text-gray-700 text-lg'>
+          <tr className="text-gray-700 text-lg">
             <th className=" px-4 py-2">Name</th>
             <th className=" px-4 py-2">Email</th>
             <th className=" px-4 py-2">Created at</th>
             <th className=" px-4 py-2">Updated at</th>
-            <th className=" px-4 py-2 text-center">
-              Actions
-            </th>
+            <th className=" px-4 py-2 text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -88,11 +87,8 @@ export default function Page() {
                     />
                   </button>
                 </div>
-              
               </td>
-            
             </tr>
-          
           ))}
         </tbody>
       </table>

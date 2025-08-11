@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
     "source.fixAll.eslint": "explicit"
@@ -11,5 +12,5 @@
     "typescriptreact"
   ],
   "prettier.enable": true,
-  "prettier.requireConfig": true     // só formata se houver .prettierrc
+  "prettier.requireConfig": true // só formata se houver .prettierrc
 }
