@@ -3,6 +3,7 @@
 
 import Loading from '@/components/Loading';
 import { ModalDeleteUser } from '@/components/ModalDeleteUser';
+import { ModalUpdateUser } from '@/components/ModalUpdateUser';
 import { deleteUser, getUsers } from '@/services/users';
 import { User } from '@/types/user';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,7 +15,8 @@ export default function Page() {
     queryKey: ['users'],
     queryFn: getUsers,
   });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const mutation = useMutation({
@@ -55,15 +57,30 @@ export default function Page() {
               <td className=" px-4 py-2">{user.name}</td>
               <td className=" px-4 py-2">{user.email}</td>
               <td className=" px-4 py-2">
-                {new Date(user.createdAt).toLocaleDateString('pt-BR')}
+                {new Date(user.createdAt).toLocaleString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </td>
               <td className=" px-4 py-2">
-                {new Date(user.createdAt).toLocaleDateString('pt-BR')}
+                {new Date(user.updatedAt).toLocaleString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </td>
               <td className=" px-4 py-2 text-center">
                 <div className="flex justify-center gap-3">
                   <button
-                    onClick={() => console.log('editar', user.id)}
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setIsUpdateModalOpen(true);
+                    }}
                     className="w-9 h-9 flex items-center justify-center rounded-full bg-green-400 hover:bg-green-500"
                   >
                     <img
@@ -76,7 +93,7 @@ export default function Page() {
                   <button
                     onClick={() => {
                       setSelectedUser(user);
-                      setIsModalOpen(true);
+                      setIsDeleteModalOpen(true);
                     }}
                     className="w-9 h-9 flex items-center justify-center rounded-full bg-red-400 hover:bg-red-500"
                   >
@@ -93,8 +110,14 @@ export default function Page() {
         </tbody>
       </table>
       <ModalDeleteUser
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => selectedUser && mutation.mutate(selectedUser.id)}
+        userName={selectedUser?.name}
+      />
+      <ModalUpdateUser
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
         onConfirm={() => selectedUser && mutation.mutate(selectedUser.id)}
         userName={selectedUser?.name}
       />
