@@ -4,7 +4,7 @@
 import Loading from '@/components/Loading';
 import { ModalDeleteUser } from '@/components/ModalDeleteUser';
 import { ModalUpdateUser } from '@/components/ModalUpdateUser';
-import { deleteUser, getUsers } from '@/services/users';
+import { deleteUser, getUsers, updateUser } from '@/services/users';
 import { User } from '@/types/user';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -19,14 +19,32 @@ export default function Page() {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const mutation = useMutation({
+  const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      setIsModalOpen(false);
+      setIsDeleteModalOpen(false);
       setSelectedUser(null);
     },
   });
+  const updateMutation = useMutation<
+    any, // or the actual return type of updateUser
+    Error,
+    { id: number; data: Partial<User> }
+  >({
+    mutationFn: ({ id, data }: { id: number; data: Partial<User> }) =>
+      updateUser(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      setIsUpdateModalOpen(false);
+      setSelectedUser(null);
+    },
+  });
+  function handleUpdateUser(data: Partial<User>) {
+    if (selectedUser) {
+      updateMutation.mutate({ id: selectedUser.id, data });
+    }
+  }
 
   if (isLoading) return <Loading />;
   if (isError) return <div>Error: {(error as Error).message}</div>;
@@ -112,14 +130,15 @@ export default function Page() {
       <ModalDeleteUser
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={() => selectedUser && mutation.mutate(selectedUser.id)}
+        onConfirm={() => selectedUser && deleteMutation.mutate(selectedUser.id)}
         userName={selectedUser?.name}
       />
       <ModalUpdateUser
         isOpen={isUpdateModalOpen}
         onClose={() => setIsUpdateModalOpen(false)}
-        onConfirm={() => selectedUser && mutation.mutate(selectedUser.id)}
+        onSubmit={handleUpdateUser}
         userName={selectedUser?.name}
+        email={selectedUser?.email}
       />
     </div>
   );

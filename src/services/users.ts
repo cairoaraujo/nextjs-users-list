@@ -13,3 +13,14 @@ export async function deleteUser(id: number) {
   if (!res.ok) throw new Error('Error on delete user');
   return res.json();
 }
+export async function updateUser(id: number, userData: Partial<User>) {
+  const res = await fetch(`${ENDPOINTS.USERS}/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+  });
+  if (!res.ok) throw new Error('Error on update user');
+  return res.json();
+}
