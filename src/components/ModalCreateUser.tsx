@@ -14,11 +14,12 @@ export function ModalCreateUser({
   onClose,
   onSubmit,
 }: ModalCreateUserProps) {
-  const { handleSubmit, register, reset } = useForm<Partial<User>>({
+  const { handleSubmit, register, reset, formState: { errors} } = useForm<Partial<User>>({
+    mode: 'onBlur',
     defaultValues: {
       name: '',
       email: '',
-    },
+    }
   });
 
   useEffect(() => {
@@ -51,8 +52,10 @@ export function ModalCreateUser({
               {...register('name', { required: true })}
               placeholder="Name"
             />
+          {errors.name && (
+            <span className="text-red-500 text-sm">{errors.name.type === 'required' ? 'Required' : 'Invalid name'}</span>
+          )}
           </div>
-
           <div>
             <label className="block mb-1 text-lg text-gray-800 font-semibold">
               Email
@@ -66,8 +69,12 @@ export function ModalCreateUser({
               placeholder="Email"
               type="email"
             />
+          {errors.email && (
+            <span className="text-red-500 text-sm">
+              {errors.email.type === 'required' ? 'Required field' : 'Invalid E-mail'}
+            </span>
+          )}
           </div>
-
           <div className="text-xl mt-10 flex justify-end gap-3 font-semibold">
             <button
               type="button"

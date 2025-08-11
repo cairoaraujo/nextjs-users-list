@@ -18,7 +18,7 @@ export function ModalUpdateUser({
   userName,
   email,
 }: ModalUpdateUserProps) {
-  const { handleSubmit, register, reset } = useForm<Partial<User>>({
+  const { handleSubmit, register, reset, formState: { errors} } = useForm<Partial<User>>({
     defaultValues: {
       name: userName || '',
       email: email || '',
@@ -59,6 +59,9 @@ export function ModalUpdateUser({
               {...register('name', { required: true })}
               placeholder={userName}
             />
+            {errors.name && (
+            <span className="text-red-500 text-sm">{errors.name.type === 'required' ? 'Required' : 'Invalid name'}</span>
+           )}
           </div>
 
           <div>
@@ -74,6 +77,9 @@ export function ModalUpdateUser({
               placeholder={email}
               type="email"
             />
+            {errors.email && (
+              <span className="text-red-500 text-sm">{errors.email.type === 'required' ? 'Required' : 'Invalid email'}</span>
+           )}
           </div>
 
           <div className="text-xl mt-10 flex justify-end gap-3">
