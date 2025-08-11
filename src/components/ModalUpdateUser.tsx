@@ -44,7 +44,7 @@ export function ModalUpdateUser({
   return ReactDOM.createPortal(
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-        <h2 className="text-2xl font-semibold mb-4">Update user</h2>
+        <h2 className="text-3xl mb-4">Update user</h2>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-5"
@@ -76,7 +76,7 @@ export function ModalUpdateUser({
             />
           </div>
 
-          <div className="text-xl mt-10 flex justify-end gap-3 font-semibold">
+          <div className="text-xl mt-10 flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
